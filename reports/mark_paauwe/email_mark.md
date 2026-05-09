@@ -15,10 +15,10 @@ Ik heb een scanner geschreven die al mijn 77 repositories analyseert op gestruct
 | Metric | Waarde |
 |--------|--------|
 | Repositories beheerd | 77 |
-| AI co-authored commits | 1.196 |
+| AI co-authored commits | 1.229 |
 | Constraint coverage (CLAUDE.md) | 76.6% |
-| Persistent memories | 114 |
-| Feedback loops (geleerde lessen) | 34 |
+| Persistent memories | 116 |
+| Feedback loops (geleerde lessen) | 36 |
 | WhatIf protocol adoptie | 69.5% |
 | Versioning discipline | 62.7% |
 | Architectuurprincipes | 25 (over 7 Design Areas) |
