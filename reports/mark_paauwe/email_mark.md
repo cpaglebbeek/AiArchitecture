@@ -15,7 +15,7 @@ Ik heb een scanner geschreven die al mijn 77 repositories analyseert op gestruct
 | Metric | Waarde |
 |--------|--------|
 | Repositories beheerd | 77 |
-| AI co-authored commits | 1.171 |
+| AI co-authored commits | 1.196 |
 | Constraint coverage (CLAUDE.md) | 76.6% |
 | Persistent memories | 114 |
 | Feedback loops (geleerde lessen) | 34 |
@@ -38,9 +38,26 @@ En dan die beschrijvende rendering waar je vandaag mee bezig was — ArchDSL met
 
 ## Live bewijs — vandaag
 
-Vandaag heb ik 10 iteraties van de EA blauwdruk voor de DB gebouwd (mark7 t/m mark16). Elk een volledige interactieve HTML met bewerkbare repository, failure simulation, impact analyse. 8 bugs getracked met kleurcodes (2× rood, 2× geel, 1× oranje, 1× groen, 2× loop). 5 terugkerende patronen gedocumenteerd met detectie + preventie. En een 15-punts feature-checklist die nu verplicht is voor elke volgende iteratie.
+Vandaag heb ik 14 iteraties van de EA blauwdruk voor de DB gebouwd (mark7 t/m mark20). Elk een volledige interactieve HTML met bewerkbare repository, failure simulation, impact analyse, fase-management en ArchDSL-generatie.
 
-Dat is het framework in actie. Niet theorie — productie.
+### AI maakt voorspelbare fouten — en dat is juist de kracht
+
+Vandaag 33 bugs gevangen in development, 0 naar productie. Wat opvalt: AI maakt steeds dezelfde **categorieën** fouten. Ik heb 8 terugkerende patronen geïdentificeerd:
+
+| Patroon | Wat AI fout doet | Hoe vaak |
+|---------|-----------------|----------|
+| **Feature-verlies** | Genereert nieuwe versie, vergeet features van vorige | 6× |
+| **Quote-escaping** | Verwart 3 contexten (HTML/JS/JS-in-HTML) | 3× |
+| **SVG innerHTML** | Gebruikt DOM API die stil faalt op SVG namespace | 3× |
+| **Refactor-restanten** | Hernoemt maar updatet niet alle referenties | 2× |
+| **Brede replace** | Vervangt ALLE voorkomens i.p.v. alleen het doel | 1× |
+| **Oneindige recursie** | Maakt wederzijdse functie-aanroepen | 1× |
+
+Dit is wat jij bedoelt met "AI is een copycat" — hij combineert patronen maar begrijpt de onderliggende structuur niet. Het verschil met vibe coding: ik **verwacht** deze fouten en heb een systeem om ze te vangen.
+
+**Elke bug doorloopt:** kleur-classificatie → RCA 3 niveaus → patroon-match → grep-detectie → checklist-item → feedback memory. 33 bugs → 8 patronen → 27-punts checklist → 0 productiefouten.
+
+Dat is het framework in actie. Niet theorie — productie. En het is jouw methodiek (principes als mechanismen, explicitering, conceptniveaus) die het fundament vormt.
 
 ## Het interactieve dashboard
 
