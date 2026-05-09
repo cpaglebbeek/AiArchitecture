@@ -155,6 +155,57 @@ def deploy():
     return True
 
 
+def update_mark_outputs(scan_data):
+    """Update Mark Paauwe WhatsApp teaser en email met scan data."""
+    print("\n" + "=" * 60)
+    print("STAP 4: Update Mark Paauwe outputs")
+    print("=" * 60)
+
+    s = scan_data["summary"]
+    mark_dir = PROJECT_ROOT / "reports" / "mark_paauwe"
+    mark_dir.mkdir(parents=True, exist_ok=True)
+
+    # WhatsApp teaser — update cijfers
+    teaser_path = mark_dir / "whatsapp_teaser.md"
+    if teaser_path.exists():
+        teaser = teaser_path.read_text()
+        # Update de harde cijfers
+        commits = s["agent_collaboration"]["claude_co_authored"]
+        commits_fmt = f"{commits:,}".replace(",", ".")
+        teaser = re.sub(r'[\d.]+ AI co-authored commits',
+                       f'{commits_fmt} AI co-authored commits', teaser)
+        teaser = re.sub(r'\d+% constraint coverage',
+                       f'{int(s["constraint_coverage"]["percentage"])}% constraint coverage', teaser)
+        teaser = re.sub(r'\d+ feedback loops',
+                       f'{s["memory_system"]["feedback_memories"]} feedback loops', teaser)
+        teaser = re.sub(r'\d+ principes in Dragon1-formaat',
+                       '25 principes in Dragon1-formaat', teaser)
+        teaser = re.sub(r'al mijn \d+ repos',
+                       f'al mijn {s["total_repos"]} repos', teaser)
+        teaser_path.write_text(teaser)
+        print(f"  OK: {teaser_path.name}")
+
+    # Email — update cijfers in de tabel
+    email_path = mark_dir / "email_mark.md"
+    if email_path.exists():
+        email = email_path.read_text()
+        updates = {
+            r'Repositories beheerd \| \d+': f'Repositories beheerd | {s["total_repos"]}',
+            r'AI co-authored commits \| [\d.]+': f'AI co-authored commits | {s["agent_collaboration"]["claude_co_authored"]:,}'.replace(',', '.'),
+            r'Constraint coverage.*?\| [\d,]+%': f'Constraint coverage (CLAUDE.md) | {s["constraint_coverage"]["percentage"]}%',
+            r'Persistent memories \| \d+': f'Persistent memories | {s["memory_system"]["total_memories"]}',
+            r'Feedback loops.*?\| \d+': f'Feedback loops (geleerde lessen) | {s["memory_system"]["feedback_memories"]}',
+            r'WhatIf protocol adoptie \| [\d,]+%': f'WhatIf protocol adoptie | {s["protocol_adoption"]["whatif"]["percentage"]}%',
+            r'Versioning discipline \| [\d,]+%': f'Versioning discipline | {s["protocol_adoption"]["versioning"]["percentage"]}%',
+        }
+        for pattern, replacement in updates.items():
+            email = re.sub(pattern, replacement, email)
+        email_path.write_text(email)
+        print(f"  OK: {email_path.name}")
+
+    return True
+
+
 def print_delta(previous, current):
     """Print delta tussen vorige en huidige scan."""
     if not previous:
@@ -220,10 +271,13 @@ def main():
     # Stap 3: Update HTML
     update_html(current)
 
-    # Stap 4: Delta
+    # Stap 4: Update Mark Paauwe outputs
+    update_mark_outputs(current)
+
+    # Stap 5: Delta
     print_delta(previous, current)
 
-    # Stap 5: Deploy
+    # Stap 6: Deploy
     if do_deploy:
         deploy()
     else:
@@ -232,11 +286,13 @@ def main():
     print("\n" + "=" * 60)
     print("KLAAR")
     print("=" * 60)
-    print(f"\n  Dashboard: icthorse.nl/aigovernance")
-    print(f"  Artikel:   icthorse.nl/aigovernance/article.html")
-    print(f"  GitHub:    github.com/cpaglebbeek/AiArchitecture")
-    print(f"  Rapport:   reports/latest_scan.md")
-    print(f"  LinkedIn:  reports/linkedin/summary_{datetime.now().strftime('%Y-%m-%d')}.md")
+    print(f"\n  Dashboard:  icthorse.nl/aigovernance")
+    print(f"  Artikel:    icthorse.nl/aigovernance/article.html")
+    print(f"  GitHub:     github.com/cpaglebbeek/AiArchitecture")
+    print(f"  Rapport:    reports/latest_scan.md")
+    print(f"  LinkedIn:   reports/linkedin/summary_{datetime.now().strftime('%Y-%m-%d')}.md")
+    print(f"  Mark WA:    reports/mark_paauwe/whatsapp_teaser.md")
+    print(f"  Mark Email: reports/mark_paauwe/email_mark.md")
 
     return 0
 
